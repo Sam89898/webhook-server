@@ -1,0 +1,30 @@
+// webhook_server.js
+const express = require("express");
+const fs = require("fs");
+const app = express();
+
+app.use(express.json());
+
+// 訊號檔案儲存位置
+const SIGNAL_PATH = "C:/MC_Signals/order.txt";
+
+app.post("/", (req, res) => {
+    const message = req.body;
+    console.log("Received:", message);
+
+    let signal = "";
+    if (message === "BUY") {
+        signal = "BUY";
+    } else if (message === "SELL") {
+        signal = "SELL";
+    }
+
+    if (signal !== "") {
+        fs.writeFileSync(SIGNAL_PATH, signal);
+        console.log("Signal written to file:", signal);
+    }
+
+    res.sendStatus(200);
+});
+
+app.listen(3000, () => console.log("Webhook listening on port 3000"));

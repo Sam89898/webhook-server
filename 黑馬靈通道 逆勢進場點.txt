@@ -1,0 +1,54 @@
+//黑馬靈通道 逆勢進場點
+Input:N1(50),N2(50),UP(3.5),DN(3.5);
+var:hh(0),ll(0),MP(0);
+MP=marketposition*currentcontracts;
+value1=Average(C,N1);
+value2=StandardDev(value1,N1,1);
+
+value3=Average(C,N2);
+value4=StandardDev(value1,N2,1);
+
+hh=value1+ (value2*UP);
+ll=value3- (value4*DN);
+
+IF marketposition<>1  and C crosses over LL  then buy next bar at market;
+IF marketposition<>-1 and C crosses under HH then sellshort next bar at market;
+
+{}
+{
+input: BMax(100),BTB(200),SMax(100), STB(100);
+var:wimax(0);
+
+if MP<>0
+then wimax=maxpositionprofit/bigpointvalue/currentcontracts;
+//if MP=0 then wimax=0;
+if MP<>MP[1] then wimax=0;
+
+if MP>0 and wimax>=BMax
+then sell next bar entryprice+wimax-BTB  stop;  
+if MP<0 and wimax>=SMax
+then buytocover next bar entryprice-wimax+STB stop;  
+}
+
+{
+inputs:  BB(70),SS(70) ;
+variables: varBB( 0 ),varSS(0) ;
+varBB = AverageFC( C,BB ) ;
+varSS = AverageFC( C,SS ) ;
+if MP= 1 and C > varBB
+then Sell  Next Bar varBB Stop;
+if MP=-1 and C < varSS 
+then Buytocover  Next Bar varSS Stop;
+}
+
+inputs: LB(100),WB(400),LS(100),WS(400);
+
+if marketposition>0 then begin
+  sell next bar entryprice(0)- (minmove/pricescale)*LB stop;  
+  sell next bar entryprice(0)+(minmove/pricescale)*WB limit;
+end; 
+
+if marketposition<0 then begin
+  buytocover next bar entryprice(0)+(minmove/pricescale)*LS stop;  
+  buytocover next bar entryprice(0)- (minmove/pricescale)*WS limit;  
+end;
